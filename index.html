@@ -522,7 +522,7 @@
                         ✅ Vos coordonnées ont été envoyées avec succès ! Un conseiller vous contactera très bientôt.
                     </div>
 
-                    <form id="contactForm" action="https://script.google.com/macros/s/AKfycbxXUmEyvUbobOZ_rZfL2ixkb_937pbvu70-fbcRHDlheWPc3lFmuM0a0OY06UvtMZP0EQ/exec" method="POST" onsubmit="return handleContactFormSubmit(event)"> 
+                    <form id="contactForm" action="https://script.google.com/macros/s/AKfycbzIrPjG5UrBgWB6tiASZcVnc1lPtu2gH3fviROEWzL3jnKcqXHOq9-CxJqTC1CnWTuYNQ/exec" method="POST" onsubmit="return handleContactFormSubmit(event)"> 
                         <div class="form-group">
                             <label for="name">Votre Nom Complet *</label>
                             <input type="text" id="name" name="Nom" required placeholder="Ex: Dupont Michel">
@@ -788,7 +788,7 @@
             // Créer FormData pour Google Apps Script
             const formData = new FormData(document.getElementById('contactForm'));
 
-            fetch('https://script.google.com/macros/s/AKfycbxXUmEyvUbobOZ_rZfL2ixkb_937pbvu70-fbcRHDlheWPc3lFmuM0a0OY06UvtMZP0EQ/exec', {
+            fetch('https://script.google.com/macros/s/AKfycbzIrPjG5UrBgWB6tiASZcVnc1lPtu2gH3fviROEWzL3jnKcqXHOq9-CxJqTC1CnWTuYNQ/exec', {
                 method: 'POST',
                 body: formData,
                 mode: 'no-cors'
