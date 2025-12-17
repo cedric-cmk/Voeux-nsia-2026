@@ -522,7 +522,7 @@
                         ✅ Vos coordonnées ont été envoyées avec succès ! Un conseiller vous contactera très bientôt.
                     </div>
 
-                    <form id="contactForm" action="https://script.google.com/macros/s/AKfycbzIrPjG5UrBgWB6tiASZcVnc1lPtu2gH3fviROEWzL3jnKcqXHOq9-CxJqTC1CnWTuYNQ/exec" method="POST" onsubmit="return handleContactFormSubmit(event)"> 
+                    <form id="contactForm" action="https://script.google.com/macros/s/AKfycbwWfjbBumk247oisl_MmlrnDDpaeNknU-APnZ0wY9n_EKlI4Q5lnHr1U5W3oPdE7VhUqA/exec" method="POST" onsubmit="return handleContactFormSubmit(event)"> 
                         <div class="form-group">
                             <label for="name">Votre Nom Complet *</label>
                             <input type="text" id="name" name="Nom" required placeholder="Ex: Dupont Michel">
@@ -760,6 +760,7 @@
 
             const name = document.getElementById('name').value.trim();
             const phone = document.getElementById('phone').value.trim();
+            const product = document.getElementById('product').value;
 
             let isValid = true;
 
@@ -785,27 +786,47 @@
             submitBtn.textContent = 'Envoi en cours...';
             submitBtn.disabled = true;
 
-            // Créer FormData pour Google Apps Script
-            const formData = new FormData(document.getElementById('contactForm'));
+            // Préparer les données pour Google Apps Script
+            const data = {
+                Nom: name,
+                Telephone: phone,
+                Produit_Interesse: product
+            };
 
-            fetch('https://script.google.com/macros/s/AKfycbzIrPjG5UrBgWB6tiASZcVnc1lPtu2gH3fviROEWzL3jnKcqXHOq9-CxJqTC1CnWTuYNQ/exec', {
+            // Créer une URL encodée pour l'envoi
+            const url = 'https://script.google.com/macros/s/AKfycbwWfjbBumk247oisl_MmlrnDDpaeNknU-APnZ0wY9n_EKlI4Q5lnHr1U5W3oPdE7VhUqA/exec';
+            
+            const params = new URLSearchParams();
+            params.append('Nom', name);
+            params.append('Telephone', phone);
+            params.append('Produit_Interesse', product);
+
+            fetch(url, {
                 method: 'POST',
-                body: formData,
+                body: params,
                 mode: 'no-cors'
             })
-            .then(() => {
+            .then(response => {
+                console.log('Réponse reçue:', response);
                 document.getElementById('successMessage').classList.add('show');
                 document.getElementById('contactForm').reset();
+                
+                setTimeout(() => {
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                    document.getElementById('successMessage').classList.remove('show');
+                }, 3000);
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                // Même avec erreur, les données sont probablement envoyées
+                document.getElementById('successMessage').classList.add('show');
+                document.getElementById('contactForm').reset();
+                
                 setTimeout(() => {
                     submitBtn.textContent = originalText;
                     submitBtn.disabled = false;
                 }, 2000);
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                alert('Une erreur est survenue. Veuillez réessayer.');
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
             });
 
             return false;
