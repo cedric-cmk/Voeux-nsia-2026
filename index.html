@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NSIA Assurance Vie - Vœux et Contact</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         /* CSS et Animations conservés pour le look professionnel */
         * {
@@ -12,11 +13,30 @@
             box-sizing: border-box;
         }
 
+        /* Variables pour le thème */
+        :root {
+            --primary-color: #1f4287;
+            --secondary-color: #3060a8;
+            --accent-color: #4CAF50;
+        }
+
+        html.dark-mode {
+            --primary-color: #1a1a1a;
+            --secondary-color: #2d2d2d;
+            --accent-color: #66BB6A;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1f4287 0%, #3060a8 100%); 
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); 
             min-height: 100vh;
             padding: 20px;
+            transition: background 0.3s ease;
+        }
+
+        html.dark-mode body {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #e0e0e0;
         }
 
         .container {
@@ -129,25 +149,309 @@
             text-align: left;
             margin-bottom: 15px;
         }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5em;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        html.dark-mode .theme-toggle {
+            background: #333;
+            color: #ffc107;
+        }
+
+        /* QR Code Container */
+        .qr-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .qr-container h3 {
+            color: #1f4287;
+            margin-bottom: 15px;
+        }
+
+        #qrcode {
+            display: inline-block;
+            margin: 10px 0;
+        }
+
+        /* Social Share Buttons */
+        .social-share {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        .social-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .whatsapp-btn {
+            background: #25D366;
+        }
+
+        .whatsapp-btn:hover {
+            background: #20BA5A;
+        }
+
+        .facebook-btn {
+            background: #1877F2;
+        }
+
+        .facebook-btn:hover {
+            background: #0D66C2;
+        }
+
+        .twitter-btn {
+            background: #1DA1F2;
+        }
+
+        .twitter-btn:hover {
+            background: #1A8CD8;
+        }
+
+        .email-btn {
+            background: #EA4335;
+        }
+
+        .email-btn:hover {
+            background: #D33425;
+        }
+
+        /* Success Message */
+        .success-message {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: white;
+            animation: loading 1.4s infinite;
+            margin: 0 2px;
+        }
+
+        .loading:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loading:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes loading {
+            0%, 80%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            40% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Validation Error */
+        .error-message {
+            color: #d32f2f;
+            font-size: 0.85em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .form-group input.error,
+        .form-group select.error {
+            border-color: #d32f2f;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .theme-toggle {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2em;
+            }
+
+            .form-container, .contact-form-container {
+                padding: 25px;
+            }
+
+            .card-content {
+                padding: 40px 20px;
+            }
+
+            .social-share {
+                gap: 8px;
+            }
+
+            .social-btn {
+                padding: 8px 12px;
+                font-size: 0.8em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                margin-bottom: 30px;
+                padding: 20px 10px;
+            }
+
+            .header h1 {
+                margin-bottom: 8px;
+            }
+
+            .card-templates {
+                grid-template-columns: 1fr;
+            }
+
+            .form-container, .contact-form-container {
+                padding: 20px;
+            }
+
+            .theme-toggle {
+                width: 40px;
+                height: 40px;
+                font-size: 1em;
+                top: 10px;
+                right: 10px;
+            }
+        }
+
+        /* Animation au chargement */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        html.dark-mode .form-container,
+        html.dark-mode .contact-form-container {
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        html.dark-mode .form-group label {
+            color: #e0e0e0;
+        }
+
+        html.dark-mode .form-group input,
+        html.dark-mode .form-group select {
+            background: #1a1a1a;
+            color: #e0e0e0;
+            border-color: #444;
+        }
+
+        html.dark-mode .share-box {
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        html.dark-mode .share-box h3 {
+            color: #66BB6A;
+        }
+
+        html.dark-mode .share-link-display {
+            background: #1a1a1a;
+            border-color: #444;
+            color: #e0e0e0;
+        }
+
+        html.dark-mode .qr-container {
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
         
     </style>
 </head>
 <body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Mode Sombre/Clair">🌙</button>
+
     <div class="container">
-        <div id="cards" class="page">
+        <div id="cards" class="page fade-in">
             <div class="header">
                 <h1>✨ NSIA Assurance Vie ✨</h1>
                 <p>Vos vœux personnalisés et votre contact privilégié pour 2026</p>
             </div>
 
             <div id="cardGeneratorForm">
-                <div class="form-container">
+                <div class="form-container fade-in">
                     <h2 style="color: #1f4287; margin-bottom: 30px; text-align: center;">1. Générer la Carte de Vœux</h2>
                     
                     <form id="cardForm">
                         <div class="form-group">
                             <label>Prénom du destinataire *</label>
                             <input type="text" id="recipientName" required placeholder="Ex: Marie"> 
+                            <span class="error-message" id="nameError">Veuillez entrer un prénom valide</span>
                         </div>
 
                         <div class="form-group">
@@ -179,26 +483,56 @@
 
                 <div class="card-content" id="cardContent">
                 </div>
+
+                <!-- QR Code -->
+                <div class="qr-container">
+                    <h3>📱 QR Code - Partage Rapide</h3>
+                    <div id="qrcode"></div>
+                </div>
                 
+                <!-- Share Box -->
                 <div class="share-box">
                     <h3>🔗 Lien de Partage à Envoyer au Client</h3>
                     <div class="share-link-display" id="shareLinkContainer"></div>
                     <button onclick="copyShareLink()" class="btn" style="width: 100%;">📋 Copier le lien de partage</button>
+
+                    <h3 style="margin-top: 20px; margin-bottom: 15px;">📤 Partager sur les réseaux</h3>
+                    <div class="social-share" id="socialShare">
+                        <button class="social-btn whatsapp-btn" onclick="shareOnWhatsApp()" title="Partager sur WhatsApp">
+                            <span>💬</span> WhatsApp
+                        </button>
+                        <button class="social-btn facebook-btn" onclick="shareOnFacebook()" title="Partager sur Facebook">
+                            <span>👍</span> Facebook
+                        </button>
+                        <button class="social-btn twitter-btn" onclick="shareOnTwitter()" title="Partager sur Twitter">
+                            <span>𝕏</span> Twitter
+                        </button>
+                        <button class="social-btn email-btn" onclick="shareByEmail()" title="Envoyer par Email">
+                            <span>✉️</span> Email
+                        </button>
+                    </div>
                 </div>
 
+                <!-- Contact Form -->
                 <div class="contact-form-container">
                     <h2 style="margin-bottom: 20px; text-align: center;">Prenez rendez-vous pour 2026 !</h2>
                     <p style="margin-bottom: 25px; text-align: center; color: #333;">Laissez-nous vos coordonnées pour être contacté en priorité par un conseiller NSIA Assurance Vie et démarrer l'année sereinement.</p>
 
-                    <form action="https://formspree.io/f/mpwvokal" method="POST"> 
+                    <div class="success-message" id="successMessage">
+                        ✅ Vos coordonnées ont été envoyées avec succès ! Un conseiller vous contactera très bientôt.
+                    </div>
+
+                    <form id="contactForm" action="https://script.google.com/macros/s/AKfycbxXUmEyvUbobOZ_rZfL2ixkb_937pbvu70-fbcRHDlheWPc3lFmuM0a0OY06UvtMZP0EQ/exec" method="POST" onsubmit="return handleContactFormSubmit(event)"> 
                         <div class="form-group">
                             <label for="name">Votre Nom Complet *</label>
                             <input type="text" id="name" name="Nom" required placeholder="Ex: Dupont Michel">
+                            <span class="error-message" id="fullNameError">Veuillez entrer un nom valide</span>
                         </div>
 
                         <div class="form-group">
                             <label for="phone">Numéro WhatsApp *</label>
                             <input type="tel" id="phone" name="Telephone" required placeholder="Ex: +229 XX XX XX XX">
+                            <span class="error-message" id="phoneError">Format invalide. Ex: +229 XX XX XX XX</span>
                         </div>
 
                         <div class="form-group">
@@ -212,11 +546,12 @@
                             </select>
                         </div>
                         
-                        <input type="hidden" name="_subject" value="Nouveau Prospect NSIA Assurance Vie (Fêtes 2024)"> 
+                        <input type="hidden" name="_subject" value="Nouveau Prospect NSIA Assurance Vie (Fêtes 2025-2026)"> 
 
-                        <button type="submit" class="btn" style="width: 100%;">Envoyer mes coordonnées</button>
+                        <button type="submit" id="submitBtn" class="btn" style="width: 100%;">Envoyer mes coordonnées</button>
                     </form>
                 </div>
+
                 <div style="text-align: center;">
                     <button onclick="resetCard()" class="btn" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); margin-top: 10px;">🔄 Nouvelle carte</button>
                 </div>
@@ -227,8 +562,29 @@
 
     <script>
         let selectedTemplate = null;
+        let qrCode = null;
 
-        // Templates de messages avec backticks correctement utilisés
+        // Charger le thème sauvegardé
+        window.addEventListener('load', () => {
+            const savedTheme = localStorage.getItem('theme');
+            const savedName = localStorage.getItem('lastRecipientName');
+            
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark-mode');
+                updateThemeButton();
+            }
+
+            if (savedName) {
+                document.getElementById('recipientName').value = savedName;
+            }
+
+            // Analytics - Compteur de visites
+            const visitCount = parseInt(localStorage.getItem('visitCount') || '0') + 1;
+            localStorage.setItem('visitCount', visitCount);
+            console.log(`Visite #${visitCount}`);
+        });
+
+        // Templates de messages
         const templates = {
             noel: {
                 emoji: '🎄',
@@ -247,6 +603,34 @@
             }
         };
 
+        // Toggle Dark Mode
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark-mode');
+            const isDark = document.documentElement.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeButton();
+        }
+
+        function updateThemeButton() {
+            const isDark = document.documentElement.classList.contains('dark-mode');
+            document.querySelector('.theme-toggle').textContent = isDark ? '☀️' : '🌙';
+        }
+
+        // Validation du formulaire de contact
+        function validatePhone(phone) {
+            const phoneRegex = /^\+?[0-9\s\-\(\)]{9,}$/;
+            return phoneRegex.test(phone);
+        }
+
+        function validateName(name) {
+            return name.trim().length >= 2;
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.error-message').forEach(msg => msg.classList.remove('show'));
+            document.querySelectorAll('input, select').forEach(field => field.classList.remove('error'));
+        }
+
         // Fonction d'affichage de la carte
         function renderCard(name, templateKey) {
             const template = templates[templateKey];
@@ -259,17 +643,37 @@
                 <p>${template.message(name)}</p>
             `;
             
-            // Affiche la div de la carte
             generatedCard.style.display = 'block';
             
-            // Lance l'animation
             setTimeout(() => {
                 generatedCard.classList.add('visible');
             }, 50);
+
+            // Générer le QR Code
+            generateQRCode();
         }
 
+        // Générer QR Code
+        function generateQRCode() {
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = '';
+            
+            const shareLink = window.location.href.split('?')[0];
+            qrCode = new QRCode(qrContainer, {
+                text: shareLink,
+                width: 200,
+                height: 200,
+                colorDark: '#1f4287',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
+        // Gestion du formulaire de génération de carte
         document.getElementById('cardForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            clearErrors();
             
             if (!selectedTemplate) {
                 alert('Veuillez choisir un modèle de carte avant de continuer.');
@@ -278,19 +682,25 @@
             
             const name = document.getElementById('recipientName').value.trim();
             
-            // Masque le formulaire de génération
-            document.getElementById('cardGeneratorForm').style.display = 'none'; 
+            if (!validateName(name)) {
+                document.getElementById('nameError').classList.add('show');
+                document.getElementById('recipientName').classList.add('error');
+                return false;
+            }
+
+            // Sauvegarder le nom
+            localStorage.setItem('lastRecipientName', name);
             
-            // Rend la carte personnalisée
+            document.getElementById('cardGeneratorForm').style.display = 'none'; 
             renderCard(name, selectedTemplate);
 
-            // Génère et affiche le lien de partage
             const shareLink = window.location.href.split('?')[0]; 
             document.getElementById('shareLinkContainer').innerText = shareLink;
             
             return false;
         });
 
+        // Sélection du template
         function selectTemplate(template) {
             document.querySelectorAll('.template-card').forEach(card => {
                 card.classList.remove('selected');
@@ -300,16 +710,108 @@
             selectedTemplate = template;
         }
         
+        // Copier le lien de partage
         function copyShareLink() {
             const link = document.getElementById('shareLinkContainer').innerText;
             navigator.clipboard.writeText(link).then(() => {
-                alert('Lien de partage copié dans le presse-papiers !');
+                alert('✅ Lien de partage copié dans le presse-papiers !');
             }).catch(err => {
                 alert('Erreur lors de la copie du lien. Veuillez le sélectionner manuellement.');
                 console.error('Erreur de copie: ', err);
             });
         }
 
+        // Partage sur WhatsApp
+        function shareOnWhatsApp() {
+            const link = document.getElementById('shareLinkContainer').innerText;
+            const text = `Découvrez mes vœux personnalisés de NSIA Assurance Vie ! ${link}`;
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Partage sur Facebook
+        function shareOnFacebook() {
+            const link = document.getElementById('shareLinkContainer').innerText;
+            const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`;
+            window.open(facebookUrl, '_blank');
+        }
+
+        // Partage sur Twitter
+        function shareOnTwitter() {
+            const link = document.getElementById('shareLinkContainer').innerText;
+            const text = `Découvrez mes vœux personnalisés de NSIA Assurance Vie ! ${link}`;
+            const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(link)}`;
+            window.open(twitterUrl, '_blank');
+        }
+
+        // Partage par Email
+        function shareByEmail() {
+            const link = document.getElementById('shareLinkContainer').innerText;
+            const subject = `Mes vœux de NSIA Assurance Vie`;
+            const body = `Découvrez mes vœux personnalisés de NSIA Assurance Vie !\n\n${link}`;
+            const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = mailtoUrl;
+        }
+
+        // Gestion du formulaire de contact
+        function handleContactFormSubmit(e) {
+            e.preventDefault();
+            clearErrors();
+
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+
+            let isValid = true;
+
+            if (!validateName(name)) {
+                document.getElementById('fullNameError').classList.add('show');
+                document.getElementById('name').classList.add('error');
+                isValid = false;
+            }
+
+            if (!validatePhone(phone)) {
+                document.getElementById('phoneError').classList.add('show');
+                document.getElementById('phone').classList.add('error');
+                isValid = false;
+            }
+
+            if (!isValid) {
+                return false;
+            }
+
+            // Soumettre le formulaire
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Envoi en cours...';
+            submitBtn.disabled = true;
+
+            // Créer FormData pour Google Apps Script
+            const formData = new FormData(document.getElementById('contactForm'));
+
+            fetch('https://script.google.com/macros/s/AKfycbxXUmEyvUbobOZ_rZfL2ixkb_937pbvu70-fbcRHDlheWPc3lFmuM0a0OY06UvtMZP0EQ/exec', {
+                method: 'POST',
+                body: formData,
+                mode: 'no-cors'
+            })
+            .then(() => {
+                document.getElementById('successMessage').classList.add('show');
+                document.getElementById('contactForm').reset();
+                setTimeout(() => {
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }, 2000);
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Une erreur est survenue. Veuillez réessayer.');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            });
+
+            return false;
+        }
+
+        // Réinitialiser la carte
         function resetCard() {
             document.getElementById('cardForm').reset();
             document.querySelectorAll('.template-card').forEach(card => {
@@ -320,10 +822,14 @@
             const generatedCard = document.getElementById('generatedCard');
             generatedCard.classList.remove('visible');
             
+            document.getElementById('successMessage').classList.remove('show');
+            clearErrors();
+            
             setTimeout(() => {
                 generatedCard.style.display = 'none';
                 document.getElementById('cardGeneratorForm').style.display = 'block';
                 document.getElementById('cardContent').innerHTML = '';
+                document.getElementById('qrcode').innerHTML = '';
             }, 600); 
         }
 
